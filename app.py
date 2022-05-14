@@ -18,6 +18,7 @@ class User(db.Model):
     def __repr__(self):
         return 'User %r' % self.id
 
+
 class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
@@ -27,10 +28,19 @@ class Notes(db.Model):
     def __repr__(self):
         return 'Note id %r' % self.id
 
+
 @app.route('/')
 @app.route('/home')
 def home():
     return render_template('index.html')
+
+
+@app.route('/users')
+def show_users():
+    # создание шаблона через который будем получать все записии из базы данных
+    users = User.query.order_by(User.registration_date).all()  # обращение к базе данных
+    # передача списка в шаблон
+    return render_template('users.html', users=users)
 
 
 @app.route('/registration', methods=['POST', "GET"])
