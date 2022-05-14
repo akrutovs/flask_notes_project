@@ -43,6 +43,11 @@ def show_users():
     return render_template('users.html', users=users)
 
 
+@app.route('/users/<int:user_id>')
+def show_one_user(user_id):
+    user = User.query.get(user_id)
+    return render_template('detail_user.html', user=user)
+
 @app.route('/registration', methods=['POST', "GET"])
 def registration():
     if request.method == 'POST':
