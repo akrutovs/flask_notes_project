@@ -38,7 +38,7 @@ def home():
 @app.route('/users')
 def show_users():
     # создание шаблона через который будем получать все записии из базы данных
-    users = User.query.order_by(User.registration_date).all()  # обращение к базе данных
+    users = User.query.order_by(User.registration_date.desc()).all()  # обращение к базе данных
     # передача списка в шаблон
     return render_template('users.html', users=users)
 
@@ -52,7 +52,7 @@ def registration():
         try:
             db.session.add(user)  # add
             db.session.commit()  # save
-            return redirect('/')
+            return redirect('/users')
         except:
             return "Error"
 

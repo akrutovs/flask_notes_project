@@ -7,7 +7,14 @@
 {% block body %}
     <div class="container mt-5">
         <h1>All users</h1>
-        {{ users[0].email }}
+        {% for el in users %}
+            <div class="alert alert-info">
+                <h4>{{ el.email }}</h4>
+                <p>{{ el.password }}</p>
+                <h4> Date {{ el.registration_date.date() }}</h4>
+                <button class="btn btn-warning">Detail</button>
 
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}
