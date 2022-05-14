@@ -1,10 +1,20 @@
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
-app = Flask(__name__)
+from datetime import datetime
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
 db = SQLAlchemy(app)
 
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    registration_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return 'User %r' % self.id
 
 @app.route('/')
 @app.route('/home')
