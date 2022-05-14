@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <h1>{{ current_user.name }}</h1>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1> {{ current_user.name }} </h1>
+        <div class="alert alert-info">
+            <h4>{{ current_user.email }}</h4>
+            <p>{{ current_user.password }}</p>
+            <p><b>Date {{ current_user.registration_date.date() }}</b></p>
+            <a href="/logout" class="btn btn-outline-dark">Log out </a>
+        </div>
+
+    </div>
+{% endblock %}

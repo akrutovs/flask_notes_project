@@ -2,8 +2,9 @@ from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_required,login_user
-#secret_password
+from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
+
+# secret_password
 app = Flask(__name__)
 # db model
 app.debug = True
@@ -12,8 +13,7 @@ app.config['SECRET_KEY'] = 'loooong_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login' #перенаправление на авторизацию
-
+login_manager.login_view = 'login'  # перенаправление на авторизацию
 
 
 class User(db.Model, UserMixin):
@@ -51,16 +51,21 @@ def login():
         print(request.form)
         username = request.form.get('email')
         password = request.form.get('password')
-        #поиск пользователя в базе
+        # поиск пользователя в базе
         user = db.session.query(User).filter(User.email == username).first()
         if user and user.check_password(password):
-            login_user (user, remember=True)
+            login_user(user, remember=True)
             return redirect('/users')
         else:
             message = "Wrong username or password"
 
     return render_template('login.html', message=message)
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 # db model user
 @login_manager.user_loader
@@ -81,6 +86,12 @@ def show_users():
     users = User.query.order_by(User.registration_date.desc()).all()  # обращение к базе данных
     # передача списка в шаблон
     return render_template('users.html', users=users)
+
+
+@app.route('/current_user')
+@login_required
+def show_current_users():
+    return render_template('current_user.html', current_user=current_user)
 
 
 @app.route('/users/<int:user_id>')
