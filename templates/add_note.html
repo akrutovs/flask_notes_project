@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <h1>Create note </h1>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Create note</h1>
+
+    <form method="post">
+        <input type="number" name="user_id" id="user_id" placeholder="User id" class="form-control"><br>
+        <textarea type="text" name="title" id="title" placeholder="title" class="form-control"></textarea><br>
+        <textarea type="text" name="text" id="text" placeholder="text" class="form-control"></textarea><br>
+        <input type="submit" class="btn btn-success" value="Create note">
+    </form>
+
+{% endblock %}
+</div>

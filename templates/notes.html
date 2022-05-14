@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <h1>All notes</h1>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>All notes</h1>
+        {% for el in notes %}
+            <div class="alert alert-info">
+                <h4>{{ el.title }}</h4>
+                <h4>{{ el.text }}</h4>
+                <p>{{ el.user_id }}</p>
+                <p><b>Date {{ el.date.date() }}</b></p>
+                <a href="/notes/{{ el.id }}" class="btn btn-warning">Detail</a>
+
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

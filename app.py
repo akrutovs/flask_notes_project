@@ -50,6 +50,37 @@ def show_one_user(user_id):
     user = User.query.get(user_id)
     return render_template('detail_user.html', user=user)
 
+@app.route('/notes')
+def show_notes():
+    # создание шаблона через который будем получать все записии из базы данных
+    notes = Notes.query.order_by(Notes.date.desc()).all()  # обращение к базе данных
+    # передача списка в шаблон
+    return render_template('notes.html', notes=notes)
+
+
+@app.route('/notes/<int:notes_id>')
+def show_one_note(notes_id):
+    note = Notes.query.get(notes_id)
+    return render_template('detail_note.html', note=note)
+
+
+@app.route('/add_note', methods=['POST', "GET"])
+def add_note():
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        title = request.form['title']
+        text = request.form['text']
+        note = Notes(user_id=user_id, title=title, text=text)
+        try:
+            db.session.add(note)  # add
+            db.session.commit()  # save
+            return redirect('/notes')
+        except:
+            return "Error"
+
+    else:
+        return render_template('add_note.html')
+
 
 @app.route('/registration', methods=['POST', "GET"])
 def registration():

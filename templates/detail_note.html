@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <h1>{{ note.id }}</h1>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1> {{ note.title }} </h1>
+        <div class="alert alert-info">
+            <h4>{{ note.text }}</h4>
+            <p><b>Date {{ note.date.date() }}</b></p>
+
+
+        </div>
+
+    </div>
+{% endblock %}
