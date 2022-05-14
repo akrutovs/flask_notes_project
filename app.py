@@ -1,15 +1,45 @@
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_required,login_user
 
 app = Flask(__name__)
 # db model
+app.debug = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'loooong_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login' #перенаправление на авторизацию
+
+
+@app.route('/login/', methods=['POST', 'GET'])
+def login():
+    message = ''
+    if request.method == 'POST':
+        print(request.form)
+        username = request.form.get('email')
+        password = request.form.get('password')
+        #поиск пользователя в базе
+        user = db.session.query(User).filter(User.email == username).first()
+        if user.password and user.check_password(password):
+            login_user (user, remember=True)
+            return redirect('/users')
+        else:
+            message = "Wrong username or password"
+
+    return render_template('login.html', message=message)
 
 
 # db model user
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(50), nullable=False)
@@ -18,6 +48,12 @@ class User(db.Model):
 
     def __repr__(self):
         return 'User %r' % self.id
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 
 class Notes(db.Model):
@@ -38,6 +74,7 @@ def home():
 
 
 @app.route('/users')
+@login_required  # должен проверять авторизацию
 def show_users():
     # создание шаблона через который будем получать все записии из базы данных
     users = User.query.order_by(User.registration_date.desc()).all()  # обращение к базе данных
@@ -118,7 +155,8 @@ def registration():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        user = User(email=email, password=password, name=name)
+        user = User(email=email, name=name)
+        user.set_password(password)
         try:
             db.session.add(user)  # add
             db.session.commit()  # save
