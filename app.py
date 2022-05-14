@@ -50,6 +50,7 @@ def show_one_user(user_id):
     user = User.query.get(user_id)
     return render_template('detail_user.html', user=user)
 
+
 @app.route('/notes')
 def show_notes():
     # создание шаблона через который будем получать все записии из базы данных
@@ -62,6 +63,35 @@ def show_notes():
 def show_one_note(notes_id):
     note = Notes.query.get(notes_id)
     return render_template('detail_note.html', note=note)
+
+
+@app.route('/notes/<int:notes_id>/delete')
+def delete_one_note(notes_id):
+    note = Notes.query.get_or_404(notes_id)
+    try:
+        db.session.delete(note)
+        db.session.commit()
+        return redirect('/notes')
+    except:
+        return 'Error'
+
+
+@app.route('/notes/<int:notes_id>/update', methods=['POST', "GET"])
+def update_note(notes_id):
+    note = Notes.query.get(notes_id)
+    if request.method == 'POST':
+        note.user_id = request.form['user_id']
+        note.title = request.form['title']
+        note.text = request.form['text']
+
+        try:
+            db.session.commit()  # save
+            return redirect('/notes')
+        except:
+            return "Error"
+
+    else:
+        return render_template('update_note.html', note=note)
 
 
 @app.route('/add_note', methods=['POST', "GET"])
