@@ -25,11 +25,6 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/about')
-def about():
-    return 'its about page'
-
-
 @app.route('/registration', methods=['POST', "GET"])
 def registration():
     if request.method == 'POST':
@@ -37,8 +32,8 @@ def registration():
         password = request.form['password']
         user = User(email=email, password=password)
         try:
-            db.session.add(user)
-            db.session.commit()
+            db.session.add(user)  # add
+            db.session.commit()  # save
             return redirect('/')
         except:
             return "Error"
