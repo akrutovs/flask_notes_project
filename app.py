@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_required,login_user
-
+#secret_password
 app = Flask(__name__)
 # db model
 app.debug = True
@@ -14,29 +14,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' #перенаправление на авторизацию
 
-
-@app.route('/login/', methods=['POST', 'GET'])
-def login():
-    message = ''
-    if request.method == 'POST':
-        print(request.form)
-        username = request.form.get('email')
-        password = request.form.get('password')
-        #поиск пользователя в базе
-        user = db.session.query(User).filter(User.email == username).first()
-        if user.password and user.check_password(password):
-            login_user (user, remember=True)
-            return redirect('/users')
-        else:
-            message = "Wrong username or password"
-
-    return render_template('login.html', message=message)
-
-
-# db model user
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.query(User).get(user_id)
 
 
 class User(db.Model, UserMixin):
@@ -65,6 +42,30 @@ class Notes(db.Model):
 
     def __repr__(self):
         return 'Note id %r' % self.id
+
+
+@app.route('/login/', methods=['POST', 'GET'])
+def login():
+    message = ''
+    if request.method == 'POST':
+        print(request.form)
+        username = request.form.get('email')
+        password = request.form.get('password')
+        #поиск пользователя в базе
+        user = db.session.query(User).filter(User.email == username).first()
+        if user and user.check_password(password):
+            login_user (user, remember=True)
+            return redirect('/users')
+        else:
+            message = "Wrong username or password"
+
+    return render_template('login.html', message=message)
+
+
+# db model user
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
 
 
 @app.route('/')
