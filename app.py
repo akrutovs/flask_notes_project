@@ -18,6 +18,14 @@ class User(db.Model):
     def __repr__(self):
         return 'User %r' % self.id
 
+class Notes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return 'Note id %r' % self.id
 
 @app.route('/')
 @app.route('/home')
