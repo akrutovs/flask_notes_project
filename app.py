@@ -4,7 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 # db model
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
 
@@ -12,6 +12,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -21,6 +22,7 @@ class User(db.Model):
 
 class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
     title = db.Column(db.String(250), nullable=False)
     text = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -48,12 +50,14 @@ def show_one_user(user_id):
     user = User.query.get(user_id)
     return render_template('detail_user.html', user=user)
 
+
 @app.route('/registration', methods=['POST', "GET"])
 def registration():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        user = User(email=email, password=password)
+        user = User(email=email, password=password, name=name)
         try:
             db.session.add(user)  # add
             db.session.commit()  # save
