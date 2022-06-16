@@ -1,6 +1,18 @@
-# flask_notes_project
+# Приложение заметок
 
-This is a note site. Here are the main Flask constructs
--there are several users it is possible to add new ones
--there is an authorization form
--and a database that stores information about users and notes
+В проекте присутствуют основные конструкции Flask:
+1. Существует несколько пользователей, есть возможность добавлять новых 
+2. Есть форма авторизации 
+3. Реализована база данных, в которой хранится информация о пользователях и заметках
+## Инструкция по установке:
+
+### Docker установка:
+
+1. Если у вас не установлен Docker: Установите [Docker](https://docs.docker.com/get-docker/).
+
+2. Запустите контейнеры:
+```sh
+docker-compose up -d --build
+```
+3. Перейдите по ссылке: (http://127.0.0.1:9000) для взаимодействия с приложением
+4. Перейдите по ссылке: (http://127.0.0.1:8080) для взаимодействия с базой данных (база данных postgresql username=postgres, password=postgres,name_database=database)

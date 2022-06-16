@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - 9000:5000
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database
+    ports:
+      - 8081:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db

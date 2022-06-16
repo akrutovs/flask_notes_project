@@ -4,17 +4,24 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
 
+db_name = 'database'
+db_user = 'postgres'
+db_pass = 'postgres'
+db_host = 'db'
+db_port = '5432'
 # secret_password
 app = Flask(__name__)
 # db model
 app.debug = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'loooong_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db_string = 'postgresql://{}:{}@{}:{}/{}'.format(db_user, db_pass, db_host, db_port, db_name)
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = db_string
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # перенаправление на авторизацию
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +49,8 @@ class Notes(db.Model):
 
     def __repr__(self):
         return 'Note id %r' % self.id
+
+db.create_all()
 
 
 @app.route('/login/', methods=['POST', 'GET'])
@@ -181,4 +190,4 @@ def registration():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0',port=5000)
