@@ -5,11 +5,6 @@ from flask_login import UserMixin, login_required, login_user, current_user, log
 from database import CreateDB
 import pickle
 
-if __name__ == '__main__':
-    from group import group
-else:
-    from .group import group
-
 app = Flask(__name__)
 init_database = CreateDB.Database(app=app)
 init_database.set_config()
