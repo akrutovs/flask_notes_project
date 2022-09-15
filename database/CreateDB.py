@@ -3,8 +3,8 @@ from flask_login import LoginManager
 
 
 class Database:
-    def __init__(self, app, db_name='database', db_user='postgres', db_pass='postgres', db_host='127.0.0.1',
-                 db_port='8081'):
+    def __init__(self, app, db_name='database', db_user='postgres', db_pass='postgres', db_host='db',
+                 db_port='5432'):
         self.db_name = db_name
         self.db_user = db_user
         self.db_pass = db_pass
