@@ -7,7 +7,9 @@
 {% block body %}
     <div class="container mt-5">
         <h1>All notes</h1>
-
+        <a href="/notes/del_all_notes" class="btn btn-danger">Delete all notes</a>
+        <a href="/notes/save_notes" class="btn btn-success">Save all</a>
+        <a href="/notes/load_notes" class="btn btn-success">Load</a>
         {% if notes|length>0 %}
             {% for el in notes %}
                 <div class="alert alert-info">
@@ -16,6 +18,7 @@
                     <p>{{ el.user_id }}</p>
                     <p><b>Date {{ el.date.date() }}</b></p>
                     <a href="/notes/{{ el.id }}" class="btn btn-warning">Detail</a>
+
 
                 </div>
             {% endfor %}

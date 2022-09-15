@@ -1,27 +1,21 @@
 from flask import Flask, render_template, url_for, request, redirect
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_required, login_user, current_user, logout_user
+from flask_login import UserMixin, login_required, login_user, current_user, logout_user
+from database import CreateDB
+import pickle
 
-db_name = 'database'
-db_user = 'postgres'
-db_pass = 'postgres'
-db_host = 'db'
-db_port = '5432'
-# secret_password
+if __name__ == '__main__':
+    from group import group
+else:
+    from .group import group
+
 app = Flask(__name__)
-# db model
-app.debug = True
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'loooong_secret_key'
-db_string = 'postgresql://{}:{}@{}:{}/{}'.format(db_user, db_pass, db_host, db_port, db_name)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = db_string
+init_database = CreateDB.Database(app=app)
+init_database.set_config()
+db = init_database.create_db()
+login_manager = init_database.create_login_manager()
 
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'  # перенаправление на авторизацию
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,6 +44,7 @@ class Notes(db.Model):
     def __repr__(self):
         return 'Note id %r' % self.id
 
+
 db.create_all()
 
 
@@ -70,11 +65,13 @@ def login():
 
     return render_template('login.html', message=message)
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
 
 # db model user
 @login_manager.user_loader
@@ -89,9 +86,9 @@ def home():
 
 
 @app.route('/users')
-@login_required  # должен проверять авторизацию
+@login_required  # проверка авторизации
 def show_users():
-    # создание шаблона через который будем получать все записии из базы данных
+    # создание шаблона через которые  получаем все записии из базы данных
     users = User.query.order_by(User.registration_date.desc()).all()  # обращение к базе данных
     # передача списка в шаблон
     return render_template('users.html', users=users)
@@ -111,7 +108,6 @@ def show_one_user(user_id):
 
 @app.route('/notes')
 def show_notes():
-    # создание шаблона через который будем получать все записии из базы данных
     notes = Notes.query.order_by(Notes.date.desc()).all()  # обращение к базе данных
     # передача списка в шаблон
     return render_template('notes.html', notes=notes)
@@ -189,5 +185,52 @@ def registration():
         return render_template('create_user.html')
 
 
+@app.route('/notes/del_all_notes', methods=["GET"])
+def del_all_notes():
+    try:
+        db.session.query(Notes).delete()
+        db.session.commit()
+        return redirect('/notes')
+    except:
+        return "Error"
+
+
+@app.route('/users/del_all_users', methods=["GET"])
+def del_all_users():
+    try:
+        db.session.query(User).delete()
+        db.session.commit()
+        return redirect('/users')
+    except:
+        return "Error"
+
+
+@app.route('/notes/save_notes', methods=["GET"])
+def save_notes():
+    notes = Notes.query.order_by(Notes.date.desc()).all()
+    data = []
+    for i in notes:
+        data.append([i.user_id, i.title, i.text])
+
+    with open('/Users/a_krut/Desktop/PythonProjects/ACM22-04/ASM.22.Lab2/data.pickle', 'wb') as f:
+        pickle.dump(notes, f)
+    return "Успешное сохранение"
+
+
+@app.route('/notes/load_notes', methods=["GET"])
+def load_notes():
+    try:
+        with open('/Users/a_krut/Desktop/PythonProjects/ACM22-04/ASM.22.Lab2/data.pickle', 'rb') as f:
+            data_new = pickle.load(f)
+
+        for note in data_new:
+            note = Notes(user_id=note.user_id, title=note.title, text=note.text)
+            db.session.add(note)
+            db.session.commit()  # save
+        return redirect('/notes')
+    except:
+        return "Error"
+
+
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0',port=5000)
+    app.run(debug=True, host='0.0.0.0', port=9000)

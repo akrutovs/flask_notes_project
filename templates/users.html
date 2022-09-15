@@ -7,6 +7,7 @@
 {% block body %}
     <div class="container mt-5">
         <h1>All users</h1>
+        <a href="/users/del_all_users" class="btn btn-danger">Delete all users</a>
         {% for el in users %}
             <div class="alert alert-info">
                 <h4>{{ el.name }}</h4>
