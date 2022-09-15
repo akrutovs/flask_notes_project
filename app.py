@@ -207,7 +207,7 @@ def save_notes():
     for i in notes:
         data.append([i.user_id, i.title, i.text])
 
-    with open('/Users/a_krut/Desktop/PythonProjects/ACM22-04/ASM.22.Lab2/data.pickle', 'wb') as f:
+    with open('data.pickle', 'wb') as f:
         pickle.dump(notes, f)
     return "Успешное сохранение"
 
@@ -215,7 +215,7 @@ def save_notes():
 @app.route('/notes/load_notes', methods=["GET"])
 def load_notes():
     try:
-        with open('/Users/a_krut/Desktop/PythonProjects/ACM22-04/ASM.22.Lab2/data.pickle', 'rb') as f:
+        with open('data.pickle', 'rb') as f:
             data_new = pickle.load(f)
 
         for note in data_new:
